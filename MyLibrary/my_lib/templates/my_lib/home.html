@@ -6,5 +6,27 @@
 </head>
 <body>
 <h1>Hello world!</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Tytuł</th>
+            <th>Data wydania</th>
+            <th>Autor</th>
+            <th>Seria</th>
+            <th>Przeczytana?</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for book in books %}
+        <tr>
+            <td>{{ book.title }}</td>
+            <td>{{ book.publication_date|default:'-' }}</td>
+            <td>{{ book.author|default:'-' }}</td>
+            <td>{{ book.series|default:'-' }}</td>
+            <td>{{ book.read_display }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 </body>
 </html>
