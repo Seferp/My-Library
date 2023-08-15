@@ -8,32 +8,33 @@ from .forms import BooksForm
 
 
 class Home(View):
+
     def get_books(self):
-        books = Books.objects.filter(bought=True).order_by('id')
+        sort_by = self.request.GET.get('sort', 'id')
+        books = Books.objects.filter(bought=True).order_by(sort_by)
         for book in books:
-            if book.read == True:
+            if book.read:
                 book.read_display = 'Read'
             else:
                 book.read_display = 'Unread'
         return books
 
-    def get_planed_books(self):
-        planed_books = Books.objects.filter(bought=False).order_by('id')
-        return planed_books
-
+    def get_planned_books(self):
+        sort_by = self.request.GET.get('sort', 'id')
+        planned_books = Books.objects.filter(bought=False).order_by(sort_by)
+        return planned_books
 
     def get(self, request):
         books = self.get_books()
         form = BooksForm()
-        planed_books = self.get_planed_books()
+        planned_books = self.get_planned_books()
 
         context = {
             'books': books,
             'form': form,
-            'planed_books': planed_books
+            'planned_books': planned_books
         }
         return render(request, 'my_lib/home.html', context)
-
 
     def post(self, request):
         form = BooksForm(request.POST)
@@ -73,7 +74,6 @@ class Home(View):
         return render(request, 'my_lib/home.html', context)
 
 
-
 class DeleteBook(DeleteView):
     model = Books
     success_url = reverse_lazy('home')
@@ -83,6 +83,7 @@ class DeleteBook(DeleteView):
         book_delete.delete()
         return redirect('home')
 
+
 class UpdateBook(View):
     model = Books
     template_name = 'my_lib/home.html'
@@ -91,6 +92,7 @@ class UpdateBook(View):
     def get(self, request, book_id):
         book = get_object_or_404(Books, id=book_id)
         return render(request, self.template_name, {'book': book})
+
     def post(self, request, book_id):
         book = get_object_or_404(Books, id=book_id)
         fields_to_update = request.POST.getlist('fields_to_update')

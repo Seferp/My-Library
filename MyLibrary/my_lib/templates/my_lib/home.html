@@ -1,95 +1,108 @@
+{% load static %}
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
+    <link rel="stylesheet" href="{% static 'my_lib/home.css' %}">
 </head>
 <body>
-<h1>Home Library</h1>
-<h2>My Books</h2>
-{% if books %}
-    <table>
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Series</th>
-                <th>Read?</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for book in books %}
-            <tr>
-                <td>{{ book.title }}</td>
-                <td>{{ book.author|default:'-' }}</td>
-                <td>{{ book.series|default:'-' }}</td>
-                <td>{{ book.read_display }}</td>
-                <td>
-                    <form method="post" action="{% url 'delete_book' book.pk %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="book_id" value="{{ book.pk }}">
-                        <button type="submit">Remove</button>
-                    </form>
-                </td>
-                <td>
-                    <form method="post" action="{% url 'update_book' book.id %}">
-                        {% csrf_token %}
-                        {% if not book.read %}
-                            <button type="submit" name="fields_to_update" value="read">
-                                Read
-                            </button>
-                        {% endif %}
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% endif %}
-<h2>Planed Books</h2>
-{% if planed_books %}
-    <table>
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Author</th>
-                <th>Series</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for planed_book in planed_books %}
-            <tr>
-                <td>{{ planed_book.title }}</td>
-                <td>{{ planed_book.author|default:'-' }}</td>
-                <td>{{ planed_book.series|default:'-' }}</td>
-                <td>
-                    <form method="post" action="{% url 'update_book' planed_book.id %}">
-                        {% csrf_token %}
-                        <button type="submit" name="fields_to_update" value="bought">Bought</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% endif %}
-<h2>Add book</h2>
-<form method="post" action="{% url 'home' %}">
-    {% csrf_token %}
-    <p>{{ form.title.label_tag }} {{ form.title }}</p>
-    <p>{{ form.author.label_tag }} {{ form.author }}</p>
-    <p>Or you can add a new author:<br>
-        <p>{{ form.new_author_name.label_tag }} {{ form.new_author_name }}
-        {{ form.new_author_lastname.label_tag }} {{ form.new_author_lastname }}</p>
-    </p>
-    <p>{{ form.series.label_tag }} {{ form.series }}</p>
-    <p> Or you can add a new series:<br>
-        <p>{{ form.new_series.label_tag }} {{ form.new_series }}</p>
-    </p>
-    <p>{{ form.read.label_tag }} {{ form.read }}</p>
-    <p>{{ form.bought.label_tag }} {{ form.bought }}</p>
-    <button type="submit">Add Book</button>
-</form>
+    <h1>Home Library</h1>
+    <section id="my_books">
+        <h2>My Books</h2>
+        {% if books %}
+            <table>
+                <thead>
+                    <tr>
+                        <th><a href="?sort=title">Title</a></th>
+                        <th><a href="?sort=author">Author</a></th>
+                        <th><a href="?sort=series">Series</a></th>
+                        <th><a href="?sort=read">Read?</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book in books %}
+                    <tr>
+                        <td>{{ book.title }}</td>
+                        <td>{{ book.author|default:'-' }}</td>
+                        <td>{{ book.series|default:'-' }}</td>
+                        <td>{{ book.read_display }}</td>
+                        <td>
+                            <div>
+                                <form method="post" action="{% url 'delete_book' book.pk %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="book_id" value="{{ book.pk }}">
+                                    <button type="submit">Remove</button>
+                                </form>
+                                <form method="post" action="{% url 'update_book' book.id %}">
+                                    {% csrf_token %}
+                                    {% if not book.read %}
+                                        <button type="submit" name="fields_to_update" value="read">
+                                            Read
+                                        </button>
+                                    {% endif %}
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </section>
+
+    <section id="planned_books">
+        <h2>Planned Books</h2>
+        {% if planned_books %}
+            <table>
+                <thead>
+                    <tr>
+                        <th><a href="?sort=title">Title</a></th>
+                        <th><a href="?sort=author">Author</a></th>
+                        <th><a href="?sort=series">Series</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for planned_book in planned_books %}
+                    <tr>
+                        <td>{{ planned_book.title }}</td>
+                        <td>{{ planned_book.author|default:'-' }}</td>
+                        <td>{{ planned_book.series|default:'-' }}</td>
+                        <td>
+                            <form method="post" action="{% url 'update_book' planned_book.id %}">
+                                {% csrf_token %}
+                                <button type="submit" name="fields_to_update" value="bought">Bought</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </section>
+
+    <section id="Add_books">
+        <h2>Add book</h2>
+        <form method="post" action="{% url 'home' %}">
+            {% csrf_token %}
+            <p>{{ form.title.label_tag }} {{ form.title }}</p>
+            <p>{{ form.author.label_tag }} {{ form.author }}</p>
+            <p>
+                Or you can add a new author:<br>
+                <p>{{ form.new_author_name.label_tag }} {{ form.new_author_name }}
+                {{ form.new_author_lastname.label_tag }} {{ form.new_author_lastname }}</p>
+            </p>
+            <p>{{ form.series.label_tag }} {{ form.series }}</p>
+            <p>
+                Or you can add a new series:<br>
+                <p>{{ form.new_series.label_tag }} {{ form.new_series }}</p>
+            </p>
+            <p>{{ form.read.label_tag }} {{ form.read }}</p>
+            <p>{{ form.bought.label_tag }} {{ form.bought }}</p>
+            <button type="submit">Add Book</button>
+        </form>
+    </section>
 
 </body>
 </html>
